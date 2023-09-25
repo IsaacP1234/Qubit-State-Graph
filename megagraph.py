@@ -8,7 +8,6 @@ def node_pairs(n):
     pairs = []
     for i in its.combinations(range(1, n+1), 2):
         pairs.append(i)
-
     return pairs
 
 
@@ -49,9 +48,6 @@ def flip_check(node1, node2):
 
 def add_flip_edges(megagraph):
     for i in megagraph.nodes():
-        #print(megagraph.nodes[i].get("perm"))
         for j in megagraph.nodes():
-            
             if flip_check(megagraph.nodes[i].get("perm"), megagraph.nodes[j].get("perm")):
-                #print("b")
                 megagraph.add_edge(i, j)

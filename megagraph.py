@@ -34,3 +34,19 @@ def create_megagraph(graph):
         megagraph.add_node(state)
         graph.clear_edges()    
     return megagraph
+
+#returns if two tuples of tuples have only one difference between them(so if 2 nodes should be connected)
+def similar_check(node1, node2):
+    diffs = 0
+    # checks if its possible for them to be similar. unnecessary but increases efficency
+    if len(node1) +1 == len(node2) or len(node1) -1 == len(node2):
+        for i in node1:
+            for j in node2:
+                if i != j:
+                    diffs+=1
+        for i in node2:
+            for j in node1:
+                if i != j:
+                    diffs+=1
+    return diffs == 1
+

@@ -46,12 +46,40 @@ def flip_check(node1, node2):
                 diffs +=1
     return diffs == 1
 
-def add_flip_edges(megagraph):
+def add_edges(megagraph, n):
     for i in megagraph.nodes():
         for j in megagraph.nodes():
             if flip_check(megagraph.nodes[i].get("combo"), megagraph.nodes[j].get("combo")):
-                megagraph.add_edge(i, j)
+                megagraph.add_edges_from([(i, j, {"type" : "flip"})])
+            if lc_check(megagraph.nodes[i].get("combo"), megagraph.nodes[j].get("combo"), n):
+                print("an lc edge")
+                megagraph.add_edges_from([(i, j, {"type" : "lc"})])
 
-def lc_check(node1, node2):
-    
-    return None
+#returns a graph with an lc done on the given node
+def do_lc(combo, node, n):
+    #make the graph the combo represents
+    graph = nx.Graph()
+    for i in range(1, n+1):
+        graph.add_node(i)
+    for i in combo:
+        graph.add_edge(i[0], i[1])
+    nodes = []
+    for i in its.combinations(graph.neighbors(node), 2):
+        nodes.append(i)
+    #print(nodes)
+    for i in nodes:
+        graph.add_edge(i[0], i[1])
+        for j in combo:
+            if i == j:
+                graph.remove_edge(i[0], i[1])
+    new_combo = []
+    for i in graph.edges:
+        new_combo.append(i)
+    return new_combo
+
+#takes in to combos representing nodes in the megagraph
+def lc_check(node1, node2, n):
+    for i in range(1, n+1):
+        #print(do_lc(node1, i, n))
+        if sorted(do_lc(node1, i, n)) == sorted(node2):
+            return True

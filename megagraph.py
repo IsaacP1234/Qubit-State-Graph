@@ -23,13 +23,13 @@ def pair_partitions(pairs):
 #for each permutation, create a node in a megagraph of that permuation of node-pairs having edges between them
 def create_megagraph(graph):
     megagraph = nx.Graph()
-    megagraph.add_nodes_from([(graph, {"perm" : (())})])
-    permuations = pair_partitions(node_pairs(len(graph.nodes())))
-    for i in range(len(permuations)):
-        for j in range(len(permuations[i])):
-            graph.add_edge(permuations[i][j][0], permuations[i][j][1])
+    megagraph.add_nodes_from([(graph, {"hash" : nx.weisfeiler_lehman_graph_hash(graph), "combo" : (())})])
+    combinations = pair_partitions(node_pairs(len(graph.nodes())))
+    for i in range(len(combinations)):
+        for j in range(len(combinations[i])):
+            graph.add_edge(combinations[i][j][0], combinations[i][j][1])
         state = graph.copy()
-        megagraph.add_nodes_from([(state, {"perm" : permuations[i]})])
+        megagraph.add_nodes_from([(state, {"hash" : nx.weisfeiler_lehman_graph_hash(graph), "combo": combinations[i]})])
         graph.clear_edges()    
     return megagraph
 
@@ -49,5 +49,9 @@ def flip_check(node1, node2):
 def add_flip_edges(megagraph):
     for i in megagraph.nodes():
         for j in megagraph.nodes():
-            if flip_check(megagraph.nodes[i].get("perm"), megagraph.nodes[j].get("perm")):
+            if flip_check(megagraph.nodes[i].get("combo"), megagraph.nodes[j].get("combo")):
                 megagraph.add_edge(i, j)
+
+def lc_check(node1, node2):
+    
+    return None

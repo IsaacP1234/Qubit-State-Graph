@@ -57,7 +57,7 @@ def add_edges(megagraph, n):
                 megagraph.add_edges_from([(i, j, {"type" : "lc"})])
     print(num_lc_edges)
 
-#returns a graph with an lc done on the given node
+#returns a new combo representing a graph with an lc done on the given node in the graph represented by the given combo
 def do_lc(combo, node, n):
     #make the graph the combo represents
     graph = nx.Graph()
@@ -65,15 +65,22 @@ def do_lc(combo, node, n):
         graph.add_node(i)
     for i in combo:
         graph.add_edge(i[0], i[1])
+    #print(graph)
+    #sepearate list because neighbors may change
     nodes = []
-    for i in its.combinations(graph.neighbors(node), 2):
-        nodes.append(i)
-    #print(nodes)
-    for i in nodes:
-        graph.add_edge(i[0], i[1])
-        for j in combo:
-            if i == j:
-                graph.remove_edge(i[0], i[1])
+    for i in graph.neighbors(node):
+        #print(i)
+        for j in graph.nodes():
+            if i !=j and j != node:
+                graph.add_edge(i,j)
+                #print(j)
+                for k in combo:
+                    #print(k)
+                    if k == (i,j) or k == (j,i):
+                        graph.remove_edge(i,j)
+                    
+                        
+                
     new_combo = []
     for i in graph.edges:
         new_combo.append(i)

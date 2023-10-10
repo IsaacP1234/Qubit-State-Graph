@@ -48,14 +48,17 @@ def flip_check(node1, node2):
 
 def add_edges(megagraph, n):
     num_lc_edges= 0
+    #num_flip_edges = 0
     for i in megagraph.nodes():
         for j in megagraph.nodes():
             if flip_check(megagraph.nodes[i].get("combo"), megagraph.nodes[j].get("combo")):
                 megagraph.add_edges_from([(i, j, {"type" : "flip"})])
+                #num_flip_edges+=1
             if lc_check(megagraph.nodes[i].get("combo"), megagraph.nodes[j].get("combo"), n):
                 num_lc_edges +=1
                 megagraph.add_edges_from([(i, j, {"type" : "lc"})])
-    print(num_lc_edges)
+    #print("edges created by flipping: " + str(num_flip_edges))
+    print("egdes created by lc: " + str(num_lc_edges))
 
 #returns a new combo representing a graph with an lc done on the given node in the graph represented by the given combo
 def do_lc(combo, node, n):

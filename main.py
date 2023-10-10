@@ -25,6 +25,8 @@ for i in shortest_paths:
     if shortest_paths[i] == max(shortest_paths.values()):
         worst_cases[i] = shortest_paths[i]
 for i in worst_cases:
+    #nx.draw(i) shows them in different orders everytime and shows square twice, x once, should be vice versa
+    #plt.show()
     print(i.adj)
     print(worst_cases[i])#4 is longest for 4 nodes, 6 is longest for 5
 #attemping to draw the graph

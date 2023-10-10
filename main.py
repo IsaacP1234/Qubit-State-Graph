@@ -2,17 +2,33 @@ import networkx as nx
 import itertools as its
 import matplotlib.pyplot as plt
 import megagraph as mg
+import test 
 
-
-nodes = [1,2,3,4]
+#for testing. can handle  up to 5 nodes in reasonable amount of time. 
+# can create a 6 node megagraph quickly, but adding edges takes a while. 
+# likely cant handle anything higher
+num_nodes = 4
 G = nx.Graph()
-G.add_nodes_from(nodes)
+for i in range(1, num_nodes+1):
+    G.add_node(i)
+print(G)
 megagraph = mg.create_megagraph(G)
 print(megagraph)
-mg.add_flip_edges(megagraph)
+mg.add_edges(megagraph, num_nodes)
 print(megagraph) # correct num edges and nodes
-#print(mg.flip_check(((1,2),(3,4)), ((1,2), (3,4),(2,3))))
-#print(mg.pair_partitions(mg.node_pairs(4)))
+#tests(just lc for now)
+#test.ut.main()
+#worst case big O
+shortest_paths = nx.shortest_path_length(megagraph, G)
+worst_cases = {}
+for i in shortest_paths:
+    if shortest_paths[i] == max(shortest_paths.values()):
+        worst_cases[i] = shortest_paths[i]
+for i in worst_cases:
+    #nx.draw(i) shows them in different orders everytime and shows square twice, x once, should be vice versa
+    #plt.show()
+    print(i.adj)
+    print(worst_cases[i])#4 is longest for 4 nodes, 6 is longest for 5
 #attemping to draw the graph
 pos = nx.spring_layout(megagraph, seed = 1)
 nx.draw(megagraph, pos=pos, with_labels=True)

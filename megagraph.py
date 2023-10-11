@@ -115,7 +115,7 @@ def do_cnot(combo, control, target, n):
         new_combo.append(i)
     return new_combo
 
-
+#takes in two combos and num nodes, returns if doing any cnot on graph1 will turn it into graph2
 def cnot_check(graph1, graph2, n):
     for i in range(1, n+1):
         for j in range(1, n+1):

@@ -28,7 +28,7 @@ for i in worst_cases:
     #plt.show()
     print(i.adj)
     print(worst_cases[i])#3 is longest for 4 nodes, 5 is longest for 5
-
+print(len(worst_cases))
 #tests(just lc and cnot for now)
 test.ut.main()
 

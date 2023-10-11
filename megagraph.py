@@ -48,6 +48,7 @@ def flip_check(node1, node2):
 
 def add_edges(megagraph, n):
     num_lc_edges= 0
+    num_cnot_edges = 0
     #num_flip_edges = 0
     for i in megagraph.nodes():
         for j in megagraph.nodes():
@@ -57,6 +58,9 @@ def add_edges(megagraph, n):
             if lc_check(megagraph.nodes[i].get("combo"), megagraph.nodes[j].get("combo"), n):
                 num_lc_edges +=1
                 megagraph.add_edges_from([(i, j, {"type" : "lc"})])
+            if cnot_check(megagraph.nodes[i].get("combo"), megagraph.nodes[j].get("combo"), n):
+                num_cnot_edges+=1
+                megagraph.add_edges_from([(i, j, {"type" : "cnot"})])
     #print("edges created by flipping: " + str(num_flip_edges))
     print("egdes created by lc: " + str(num_lc_edges))
 
@@ -70,7 +74,6 @@ def do_lc(combo, node, n):
         graph.add_edge(i[0], i[1])
     #print(graph)
     #sepearate list because neighbors may change
-    nodes = []
     for i in graph.neighbors(node):
         #print(i)
         for j in graph.nodes():
@@ -80,10 +83,7 @@ def do_lc(combo, node, n):
                 for k in combo:
                     #print(k)
                     if k == (i,j) or k == (j,i):
-                        graph.remove_edge(i,j)
-                    
-                        
-                
+                        graph.remove_edge(i,j)           
     new_combo = []
     for i in graph.edges:
         new_combo.append(i)
@@ -95,3 +95,30 @@ def lc_check(node1, node2, n):
         #print(do_lc(node1, i, n))
         if sorted(do_lc(node1, i, n)) == sorted(node2):
             return True
+
+#takes in a combo representing  a node in the megagraph and two nodes wihtin the minigraph(node1=control, node2=target) and returns a 
+def do_cnot(combo, control, target, n):
+    #make the graph the combo represents
+    graph = nx.Graph()
+    for i in range(1, n+1):
+        graph.add_node(i)
+    for i in combo:
+        graph.add_edge(i[0], i[1])
+    for i in graph.neighbors(target):
+        #flip egde between neighbor of tagret and control
+        if graph.has_edge(control, i):
+            graph.remove_edge(control, i)
+        else:
+            graph.add_edge(control, i)
+    new_combo = []
+    for i in graph.edges:
+        new_combo.append(i)
+    return new_combo
+
+
+def cnot_check(graph1, graph2, n):
+    for i in range(1, n+1):
+        for j in range(1, n+1):
+            if i !=j:
+                if sorted(do_cnot(graph1, i, j, n)) == sorted(graph2):
+                    return True

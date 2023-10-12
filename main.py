@@ -7,7 +7,7 @@ import test
 #for testing. can handle  up to 5 nodes in reasonable amount of time(like 10 mins for 5, quickly for 4). 
 # can create a 6 node megagraph quickly, but adding edges takes a while. 
 # likely cant handle anything higher
-num_nodes = 4
+num_nodes = 5
 G = nx.Graph()
 for i in range(1, num_nodes+1):
     G.add_node(i)
@@ -27,7 +27,7 @@ for i in worst_cases:
     #nx.draw(i) shows them in different orders everytime and shows square twice, x once, should be vice versa
     #plt.show()
     print(i.adj)
-    print(worst_cases[i])#3 is longest for 4 nodes, 5 is longest for 5
+    print(worst_cases[i])#4 is longest for 4 nodes, 6 is longest for 5
 print(len(worst_cases))
 #tests(just lc and cnot for now)
 test.ut.main()

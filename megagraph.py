@@ -51,7 +51,23 @@ def add_edges(megagraph, n):
     num_cnot_edges = 0
     #num_flip_edges = 0
     for i in megagraph.nodes():
-        for j in megagraph.nodes():
+        for j in its.combinations(i.nodes(), 2):
+            for k in megagraph.nodes():
+                node = sorted(megagraph.nodes[k].get("combo"))
+                if node == sorted(do_czed(megagraph.nodes[i].get("combo"), j[0], j[1], n)):
+                    megagraph.add_edge(i, k)
+                if node == sorted(do_cnot(megagraph.nodes[i].get("combo"), j[0], j[1], n)):
+                    megagraph.add_edge(i, k)
+                if node == do_cnot(megagraph.nodes[i].get("combo"), j[1], j[0], n):
+                     megagraph.add_edge(i, k)
+        for j in i.nodes():
+            for k in megagraph.nodes():
+                if sorted(megagraph.nodes[k].get("combo")) == sorted(do_lc(megagraph.nodes[i].get("combo"), j, n)):
+                    megagraph.add_edge(i, k)
+            
+            
+
+        """ for j in megagraph.nodes():
             if flip_check(megagraph.nodes[i].get("combo"), megagraph.nodes[j].get("combo")):
                 megagraph.add_edges_from([(i, j, {"type" : "flip"})])
                 #num_flip_edges+=1
@@ -60,10 +76,25 @@ def add_edges(megagraph, n):
                 megagraph.add_edges_from([(i, j, {"type" : "lc"})])
             if cnot_check(megagraph.nodes[i].get("combo"), megagraph.nodes[j].get("combo"), n):
                 num_cnot_edges+=1
-                megagraph.add_edges_from([(i, j, {"type" : "cnot"})])
+                megagraph.add_edges_from([(i, j, {"type" : "cnot"})]) """
     #print("edges created by flipping: " + str(num_flip_edges))
     print("egdes created by lc: " + str(num_lc_edges))
 
+def do_czed(combo, node1, node2, n):
+    #make the graph the combo represents
+    graph = nx.Graph()
+    for i in range(1, n+1):
+        graph.add_node(i)
+    for i in combo:
+        graph.add_edge(i[0], i[1])
+    if graph.has_edge(node1, node2):
+        graph.remove_edge(node1, node2)
+    else:
+        graph.add_edge(node1, node2)
+    new_combo = []
+    for i in graph.edges:
+        new_combo.append(i)
+    return new_combo
 #returns a new combo representing a graph with an lc done on the given node in the graph represented by the given combo
 def do_lc(combo, node, n):
     #make the graph the combo represents

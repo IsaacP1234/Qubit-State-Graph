@@ -101,11 +101,12 @@ def do_cnot(combo, control, target, n):
     for i in combo:
         graph.add_edge(i[0], i[1])
     for i in graph.neighbors(target):
+        if i != control:
         #flip egde between neighbor of tagret and control
-        if graph.has_edge(control, i):
-            graph.remove_edge(control, i)
-        else:
-            graph.add_edge(control, i)
+            if graph.has_edge(control, i):
+                graph.remove_edge(control, i)
+            else:
+                graph.add_edge(control, i)
     new_combo = []
     for i in graph.edges:
         new_combo.append(i)

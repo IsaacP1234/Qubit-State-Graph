@@ -7,7 +7,7 @@ import test
 #for testing. can handle  up to 5 nodes in reasonable amount of time(like 10 mins for 5, quickly for 4). 
 # can create a 6 node megagraph quickly, but adding edges takes a while. 
 # likely cant handle anything higher
-num_nodes = 5
+num_nodes = 4
 G = nx.Graph()
 for i in range(1, num_nodes+1):
     G.add_node(i)

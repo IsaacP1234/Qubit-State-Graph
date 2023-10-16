@@ -74,16 +74,12 @@ def do_lc(combo, node, n):
         graph.add_edge(i[0], i[1])
     #print(graph)
     #sepearate list because neighbors may change
-    for i in graph.neighbors(node):
+    for i in its.combinations(graph.neighbors(node), 2):
         #print(i)
-        for j in graph.nodes():
-            if i !=j and j != node:
-                graph.add_edge(i,j)
-                #print(j)
-                for k in combo:
-                    #print(k)
-                    if k == (i,j) or k == (j,i):
-                        graph.remove_edge(i,j)           
+        if graph.has_edge(i[0], i[1]):
+            graph.remove_edge(i[0], i[1])
+        else:
+            graph.add_edge(i[0], i[1])
     new_combo = []
     for i in graph.edges:
         new_combo.append(i)
@@ -105,11 +101,12 @@ def do_cnot(combo, control, target, n):
     for i in combo:
         graph.add_edge(i[0], i[1])
     for i in graph.neighbors(target):
+        if i != control:
         #flip egde between neighbor of tagret and control
-        if graph.has_edge(control, i):
-            graph.remove_edge(control, i)
-        else:
-            graph.add_edge(control, i)
+            if graph.has_edge(control, i):
+                graph.remove_edge(control, i)
+            else:
+                graph.add_edge(control, i)
     new_combo = []
     for i in graph.edges:
         new_combo.append(i)

@@ -27,7 +27,7 @@ for i in worst_cases:
     #nx.draw(i) shows them in different orders everytime and shows square twice, x once, should be vice versa
     #plt.show()
     print(i.adj)
-    print(worst_cases[i])#3 is longest for 4 nodes, 5 is longest for 5
+    print(worst_cases[i])#4 is longest for 4 nodes, 6 is longest for 5
 print(len(worst_cases))
 #tests(just lc and cnot for now)
 test.ut.main()

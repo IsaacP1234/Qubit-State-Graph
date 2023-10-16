@@ -6,7 +6,7 @@ import itertools as its
 
 class test_megagraph(ut.TestCase):
     def test_do_lc(self):
-        self.assertEqual(sorted(mg.do_lc([(1,4)], 1, 4)), sorted([(1,4),(2,4),(3,4)]))
+        self.assertEqual(sorted(mg.do_lc([(1,4), (1,2)], 1, 4)), sorted([(1,4),(2,4),(1,2)]))
     def test_do_lc_star(self):
         self.assertEqual(sorted(mg.do_lc([(1,2),(1,3),(1,4)], 1, 4)), sorted([(1,2),(1,3),(1,4), (2,3), (2,4), (3,4)]))
     def test_do_cnot(self):

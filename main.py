@@ -23,6 +23,26 @@ megagraph = mg.create_megagraph(G)
 print(megagraph)
 mg.add_edges(megagraph, num_nodes)
 print(megagraph) # correct num edges and nodes
+megagraph2 = mg.create_megagraph(G)
+print(megagraph2)
+# test for extra edges. num should be 58, is 70
+mg.add_edges_alt(megagraph2, num_nodes)
+print(megagraph2)
+num =0
+for i in megagraph2.edges():
+    b = False
+    #print(megagraph2.nodes[i[0]].get("combo"))
+    for j in megagraph.edges():
+        #print(j[1].adj)
+        if (sorted(megagraph2.nodes[i[0]].get("combo")) == sorted(megagraph.nodes[j[0]].get("combo")) and sorted(megagraph2.nodes[i[1]].get("combo")) == sorted(megagraph.nodes[j[1]].get("combo"))) or (sorted(megagraph2.nodes[i[0]].get("combo")) == sorted(megagraph.nodes[j[1]].get("combo")) and sorted(megagraph2.nodes[i[1]].get("combo")) == sorted(megagraph.nodes[j[0]].get("combo"))):
+            b = True
+    if not(b):
+        print(i[0].adj)
+        print(i[1].adj)
+        print(megagraph2.edges[i].get("type"))
+        num +=1
+print(num)
+
 
 #4 is longest for 4 nodes, 6 is longest for 5
 shortest_paths_of_worst_cases = ats.find_shortest_paths_of_worst_cases(megagraph, G)

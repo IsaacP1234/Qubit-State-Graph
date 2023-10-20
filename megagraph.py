@@ -56,7 +56,7 @@ def add_edges(megagraph, n):
             num_flip_edges+=1
         if lc_check(megagraph.nodes[i[0]].get("combo"), megagraph.nodes[i[1]].get("combo"), n):
             num_lc_edges +=1
-            #megagraph.add_edges_from([(i[0], i[1], {"type" : "lc"})])
+            megagraph.add_edges_from([(i[0], i[1], {"type" : "lc"})])
         if cnot_check(megagraph.nodes[i[0]].get("combo"), megagraph.nodes[i[1]].get("combo"), n):
             num_cnot_edges+=1
             megagraph.add_edges_from([(i[0], i[1], {"type" : "cnot"})])
@@ -65,17 +65,21 @@ def add_edges(megagraph, n):
     print(num_cnot_edges)
 
 def add_edges_alt(megagraph, n):
+    num_flip_edges = 0
+    num_lc_edges = 0
+    num_cnot_edges = 0
     for i in megagraph.nodes():
         for j in megagraph.nodes():
-            if flip_check(megagraph.nodes[i].get("combo"), megagraph.nodes[j].get("combo")):
-                megagraph.add_edges_from([(i, j, {"type" : "flip"})])
-                #num_flip_edges+=1
-            if lc_check(megagraph.nodes[i].get("combo"), megagraph.nodes[j].get("combo"), n):
-                #num_lc_edges +=1
-                megagraph.add_edges_from([(i, j, {"type" : "lc"})])
-            if cnot_check(megagraph.nodes[i].get("combo"), megagraph.nodes[j].get("combo"), n):
-                #num_cnot_edges+=1
-                megagraph.add_edges_from([(i, j, {"type" : "cnot"})])
+            if i !=j:
+                if flip_check(megagraph.nodes[i].get("combo"), megagraph.nodes[j].get("combo")):
+                    megagraph.add_edges_from([(i, j, {"type" : "flip"})])
+                    num_flip_edges+=1
+                if lc_check(megagraph.nodes[i].get("combo"), megagraph.nodes[j].get("combo"), n):
+                    num_lc_edges +=1
+                    megagraph.add_edges_from([(i, j, {"type" : "lc"})])
+                if cnot_check(megagraph.nodes[i].get("combo"), megagraph.nodes[j].get("combo"), n):
+                    num_cnot_edges+=1
+                    megagraph.add_edges_from([(i, j, {"type" : "cnot"})])
 
 #returns a new combo representing a graph with an lc done on the given node in the graph represented by the given combo
 def do_lc(combo, node, n):

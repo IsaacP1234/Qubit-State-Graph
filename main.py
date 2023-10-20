@@ -23,10 +23,10 @@ megagraph = mg.create_megagraph(G)
 print(megagraph)
 mg.add_edges(megagraph, num_nodes)
 print(megagraph) # correct num edges and nodes
-megagraph2 = mg.create_megagraph(G)
-print(megagraph2)
+#megagraph2 = mg.create_megagraph(G)
+#print(megagraph2)
 # test for extra edges. num should be 58, is 70
-mg.add_edges_alt(megagraph2, num_nodes)
+""" mg.add_edges_alt(megagraph2, num_nodes)
 print(megagraph2)
 num =0
 for i in megagraph2.edges():
@@ -41,7 +41,7 @@ for i in megagraph2.edges():
         print(i[1].adj)
         print(megagraph2.edges[i].get("type"))
         num +=1
-print(num)
+print(num) """
 
 
 #4 is longest for 4 nodes, 6 is longest for 5
@@ -50,7 +50,7 @@ for i in shortest_paths_of_worst_cases[0]:
     #print(i[0])
     print(megagraph.nodes[i[1]].get("combo"))
 #tests(just lc and cnot for now)
-test.ut.main()
+#test.ut.main()
 
 #attemping to draw the graph
 pos = nx.spring_layout(megagraph, seed = 1)

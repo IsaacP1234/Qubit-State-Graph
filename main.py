@@ -27,7 +27,7 @@ print(dict["foo"])
 # can create a 6 node megagraph quickly, but adding edges takes a while.(2 mins total)
 # likely cant handle anything higher within reasonable amount of time
 
-num_nodes = 4
+num_nodes = 3
 G = nx.Graph()
 for i in range(1, num_nodes+1):
     G.add_node(i)
@@ -56,6 +56,6 @@ for i in shortest_paths_of_worst_cases[0]:
 #test.ut.main()
 
 #attemping to draw the graph
-pos = nx.spring_layout(megagraph, seed = 1)
-nx.draw(megagraph, pos=pos, with_labels=True)
-plt.show()
+#pos = nx.spring_layout(megagraph, seed = 1)
+#nx.draw(megagraph, pos=pos, with_labels=True)
+#plt.show()

@@ -1,5 +1,5 @@
 import networkx as nx
-
+import megagraph as mg
 #takes in completed megagraph and node to start at
 #returns list of tuples containing a worst case graph and the number of operations it takes to get there
 def find_worst_cases(megagraph, start):
@@ -46,3 +46,24 @@ def find_groups(megagraph):
         else:
             groups[0].append(i)
     return groups
+
+def shortest_path_to_star(megagraph, start, n):
+    star_graph = nx.Graph()
+    for i in range(2, n+1):
+        star_graph.add_edge(1,i)
+    return find_shortest_path(megagraph, start, mg.new_hash(star_graph))
+
+def find_equivalence_classes(megagraph):
+    class_graph = nx.connected_components(megagraph)
+    classes = []
+    index = 0
+    for i in class_graph:
+        classes.append({})
+        for j in i:
+            iso_hash = nx.weisfeiler_lehman_graph_hash(megagraph.nodes[j].get("graph"))
+            try:
+                classes[index].values().index(iso_hash)
+            except:
+                classes[index][megagraph.nodes[j].get("combo")] = iso_hash
+        index+=1
+    return classes

@@ -9,9 +9,9 @@ import test
 
 nx.Graph().__hash__ = mg.new_hash(nx.Graph())
 A = nx.Graph()
-A.add_edge(1,2)
+A.add_edges_from([(1,2), (2,3)])
 B = nx.Graph()
-B.add_edge(1,2)
+B.add_edge(2,3)
 for c in sorted(nx.connected_components(A), key=len, reverse=True):
     print(len(c))
 print(nx.weisfeiler_lehman_graph_hash(A))
@@ -38,22 +38,21 @@ for i in shortest_paths_of_worst_cases[0]:
     print(i[0])
     print(i[0])
     print(megagraph.nodes[i[1]].get("combo")) """
-#only in 6 node megagraph
-#hourglass = nx.Graph()
-#hourglass.add_edges_from([(1,2), (2,3), (3,4), (4,5), (5,6), (6,1)])
-#print(ats.find_shortest_path(megagraph, mg.new_hash(nx.Graph()), mg.new_hash(hourglass)))
+
+#special states
+""" if len(megagraph.nodes()) == 2**15: # if 6
+    print(ats.shortest_path_to_hourglass(megagraph))
+
+if len(megagraph.nodes()) == 2**21: # if 7
+    print(ats.shortest_path_to_open_envelope(megagraph)) """
+
 
 #print(ats.shortest_path_to_star(megagraph, mg.new_hash(nx.Graph()), num_nodes))
 
 #equivalence classes(only for cnot)
 for i in ats.find_equivalence_classes(megagraph):
     print(len(i.keys()))
-#groups = ats.find_groups(megagraph)
-#for i in groups:
-    #print(len(i))
-    #for j in i:
-        #print(megagraph.nodes[j].get("combo"))
-    #print("break")
+    
 #tests(just lc and cnot for now)
 #test.ut.main()
 

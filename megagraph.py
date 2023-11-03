@@ -53,6 +53,7 @@ def add_edges(megagraph, n):
             if new_graph != i:
                 megagraph.add_edges_from([(i, new_graph, {"operation(s)" : ""})]) 
                 megagraph.edges[(i, new_graph)]["operation(s)"] += "flip"+str((j[0], j[1]))+" "
+                num_flip_edges +=1
             new_graph = new_hash(do_cnot(megagraph.nodes[i].get("combo"), j[0], j[1], n))
             if new_graph != i:
                 megagraph.add_edges_from([(i, new_graph, {"operation(s)" : ""})]) 
@@ -66,7 +67,7 @@ def add_edges(megagraph, n):
                    
     print("edges created by flipping: " + str(num_flip_edges))
     print("egdes created by lc: " + str(num_lc_edges))
-    print(num_cnot_edges)
+    print("edges created by cnot: " + str(num_cnot_edges))
 
 
 #returns a new combo representing a graph with an lc done on the given node in the graph represented by the given combo

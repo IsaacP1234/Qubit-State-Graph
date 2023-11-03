@@ -27,32 +27,13 @@ def find_shortest_paths_of_worst_cases(megagraph, start):
         megalist.append(find_shortest_path(megagraph, start, i[0]))
     return megalist
 
-
-#for only cnot graph--returns two lists of graphs represent the two groups of graphs that are connected by cnots
-def find_groups(megagraph):
-    groups = [[],[]]
-    # find a valid start node
-    start_node = None
-    for i in megagraph.nodes():
-        if megagraph.nodes[i].get("combo") != (()):
-            start_node = i
-            break
-    #sort nodes
-    for i in megagraph.nodes():
-        try:
-            nx.shortest_path_length(megagraph, start_node, i)
-        except:
-            groups[1].append(i)
-        else:
-            groups[0].append(i)
-    return groups
-
 def shortest_path_to_star(megagraph, start, n):
     star_graph = nx.Graph()
     for i in range(2, n+1):
         star_graph.add_edge(1,i)
     return find_shortest_path(megagraph, start, mg.new_hash(star_graph))
 
+#typically for only cnot graphs
 def find_equivalence_classes(megagraph):
     class_graph = nx.connected_components(megagraph)
     classes = []
@@ -62,8 +43,20 @@ def find_equivalence_classes(megagraph):
         for j in i:
             iso_hash = nx.weisfeiler_lehman_graph_hash(megagraph.nodes[j].get("graph"))
             try:
-                classes[index].values().index(iso_hash)
+                list(classes[index].values()).index(iso_hash)
             except:
                 classes[index][megagraph.nodes[j].get("combo")] = iso_hash
         index+=1
     return classes
+
+#only for 6 nodes
+def shortest_path_to_hourglass(megagraph):
+    hourglass = nx.Graph()#special graph state that looks like an hourglass
+    hourglass.add_edges_from([(1,2), (2,3), (3,4), (4,5), (5,6), (6,1)])
+    return find_shortest_path(megagraph, mg.new_hash(nx.Graph()), mg.new_hash(hourglass))
+
+#only for 7 nodes
+def shortest_path_to_open_envelope(megagraph):
+    open_envelope = nx.Graph() # special graph state that looks like an envelope open on the left
+    open_envelope.add_edges_from([(1,2), (2,3), (3,4), (4,5), (5,6), (6,1), (6,7), (2,7), (3,7), (4,7)])
+    return find_shortest_path(megagraph, mg.new_hash(nx.Graph()), mg.new_hash(open_envelope))

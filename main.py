@@ -17,11 +17,16 @@ for c in sorted(nx.connected_components(A), key=len, reverse=True):
 print(nx.weisfeiler_lehman_graph_hash(A))
 print(nx.weisfeiler_lehman_graph_hash(B))
 
+diction = {"foo": "bar"}
+diction["foo"] +="bar"
+print(diction.get("foo"))
+
+
 #for testing. can handle  up to 5 nodes in reasonable amount of time(about 7 seccs for 5, instant for 4). 
 # can create a 6 node megagraph quickly, but adding edges takes a while.(2 mins total)
 # likely cant handle anything higher within reasonable amount of time
 
-num_nodes = 6
+num_nodes = 7
 G = nx.Graph()
 for i in range(1, num_nodes+1):
     G.add_node(i)
@@ -32,26 +37,41 @@ print(megagraph)
 mg.add_edges(megagraph, num_nodes)
 print(megagraph) # correct num edges and nodes
 
+
+
+#prints all edge operations
+""" for i in megagraph.edges():
+    print(megagraph.edges[i].get("operation(s)")) """
+#special states
+if num_nodes == 6:
+    print("\nshortest path to hourglass")
+    for i in ats.shortest_path_to_hourglass(megagraph):
+        print(i[0])
+        print(i[1].get("combo"))
+
+if num_nodes == 7:
+    print("\nshortest path to hourglass")
+    for i in ats.shortest_path_to_open_envelope(megagraph):
+        print(i[0])
+        print(i[1].get("combo"))
+
+print("\nshortest path to star")
+for i in ats.shortest_path_to_star(megagraph, mg.new_hash(nx.Graph()), num_nodes):
+    print(i[0])
+    print(i[1].get("combo"))
+
+
 #4 is longest for 4 nodes, 6 is longest for 5
-""" shortest_paths_of_worst_cases = ats.find_shortest_paths_of_worst_cases(megagraph, mg.new_hash(G))
+print("\nshortest path to a worst case")
+shortest_paths_of_worst_cases = ats.find_shortest_paths_of_worst_cases(megagraph, mg.new_hash(G))
 for i in shortest_paths_of_worst_cases[0]:
     print(i[0])
-    print(i[0])
-    print(megagraph.nodes[i[1]].get("combo")) """
+    print(i[1].get("combo"))
 
-#special states
-""" if len(megagraph.nodes()) == 2**15: # if 6
-    print(ats.shortest_path_to_hourglass(megagraph))
-
-if len(megagraph.nodes()) == 2**21: # if 7
-    print(ats.shortest_path_to_open_envelope(megagraph)) """
-
-
-#print(ats.shortest_path_to_star(megagraph, mg.new_hash(nx.Graph()), num_nodes))
 
 #equivalence classes(only for cnot)
-for i in ats.find_equivalence_classes(megagraph):
-    print(len(i.keys()))
+#for i in ats.find_equivalence_classes(megagraph):
+    #print(len(i.keys()))
     
 #tests(just lc and cnot for now)
 #test.ut.main()

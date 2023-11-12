@@ -4,20 +4,21 @@ import megagraph as mg
 #returns list of tuples containing a worst case graph and the number of operations it takes to get there
 def find_worst_cases(megagraph, start):
     shortest_path_lengths = nx.shortest_path_length(megagraph, start)
+    worst_length = max(shortest_path_lengths.values())
     worst_cases = []
     for i in shortest_path_lengths:
-        if shortest_path_lengths[i] == max(shortest_path_lengths.values()):
+        if shortest_path_lengths[i] == worst_length:
             worst_cases.append((i, shortest_path_lengths[i]))
     return worst_cases
 
 
 #returns list of tuples containing an operation and the graph that operation leads to 
 def find_shortest_path(megagraph, start, target):
-    shortest_path = []
-    for j in range(len(nx.shortest_path(megagraph, start, target))-1):
-        shortest_path.append((megagraph.edges[nx.shortest_path(megagraph, start, target)[j], 
-                                             nx.shortest_path(megagraph, start, target)[j+1]].get("operation(s)"), nx.shortest_path(megagraph, start, target)[j+1],))
-    return shortest_path
+    shortest_path = nx.shortest_path(megagraph, start, target)
+    formatted_shortest_path = []
+    for j in range(len(shortest_path)-1):
+        formatted_shortest_path.append((megagraph.edges[shortest_path[j], shortest_path[j+1]].get("operation(s)"), megagraph.nodes[shortest_path[j+1]]))
+    return formatted_shortest_path
 
 #returns list of lists of tuples containing an operation and the graph that operation leads to)
 def find_shortest_paths_of_worst_cases(megagraph, start):
@@ -52,7 +53,7 @@ def find_equivalence_classes(megagraph):
 #only for 6 nodes
 def shortest_path_to_hourglass(megagraph):
     hourglass = nx.Graph()#special graph state that looks like an hourglass
-    hourglass.add_edges_from([(1,2), (2,3), (3,4), (4,5), (5,6), (6,1)])
+    hourglass.add_edges_from([(1,2), (2,3), (3,4), (4,5), (5,6), (6,1), (6,3)])
     return find_shortest_path(megagraph, mg.new_hash(nx.Graph()), mg.new_hash(hourglass))
 
 #only for 7 nodes

@@ -61,3 +61,30 @@ def shortest_path_to_open_envelope(megagraph):
     open_envelope = nx.Graph() # special graph state that looks like an envelope open on the left
     open_envelope.add_edges_from([(1,2), (2,3), (3,4), (4,5), (5,6), (6,1), (6,7), (2,7), (3,7), (4,7)])
     return find_shortest_path(megagraph, mg.new_hash(nx.Graph()), mg.new_hash(open_envelope))
+
+def find_large_edges(megagraph, operations = ["cnot", "lc", "flip"]):
+    edges = megagraph.edges()
+    #find max edge delta
+    edge_deltas = []
+    for i in edges:
+        for j in operations:
+            for k in edges[i].get("operation(s)"):
+                if k.__contains__(j):
+                    edge_deltas.append(edges[i].get("edge delta"))
+    max_delta = max(edge_deltas)
+    #create formatted list of edges
+    large_edges = []
+    for i in edges:
+        for j in operations:
+            for k in edges[i].get("operation(s)"):
+                if k.__contains__(j):
+                    if edges[i].get("edge delta") == max_delta:
+                        edge = []
+                        edge.append(megagraph.nodes[i[0]].get("combo"))
+                        edge.append(megagraph.nodes[i[1]].get("combo"))
+                        edge.append(edges[i].get("operation(s)"))
+                        edge.append(max_delta)
+                        large_edges.append(edge)
+                        break
+    return large_edges
+

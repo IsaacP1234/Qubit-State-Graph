@@ -46,7 +46,8 @@ def add_edges(megagraph, n):
             new_graph = new_hash(do_lc(megagraph.nodes[i].get("combo"), j, n))
             if new_graph != i:
                 if not(megagraph.has_edge(i, new_graph)):
-                    megagraph.add_edges_from([(i, new_graph, {"operation(s)" : []})])
+                    megagraph.add_edges_from([(i, new_graph, {"operation(s)" : [], 
+                    "edge delta": abs(len(megagraph.nodes[new_graph].get("combo"))-len(megagraph.nodes[i].get("combo")))})])
                     megagraph.edges[(i, new_graph)]["operation(s)"].append("lc("+str(j)+")")
                     num_lc_edges+=1
                 else:
@@ -59,7 +60,8 @@ def add_edges(megagraph, n):
             new_graph = new_hash(do_flip(megagraph.nodes[i].get("combo"), j[0], j[1], n))
             if new_graph != i:
                 if not(megagraph.has_edge(i, new_graph)):
-                    megagraph.add_edges_from([(i, new_graph, {"operation(s)" : []})]) 
+                    megagraph.add_edges_from([(i, new_graph, {"operation(s)" : [], 
+                    "edge delta": abs(len(megagraph.nodes[new_graph].get("combo"))-len(megagraph.nodes[i].get("combo")))})]) 
                     megagraph.edges[(i, new_graph)]["operation(s)"].append("flip"+str((j[0], j[1])))
                     num_flip_edges +=1
                 else:
@@ -71,7 +73,8 @@ def add_edges(megagraph, n):
             new_graph = new_hash(do_cnot(megagraph.nodes[i].get("combo"), j[0], j[1], n))
             if new_graph != i:
                 if not(megagraph.has_edge(i, new_graph)):
-                    megagraph.add_edges_from([(i, new_graph, {"operation(s)" : []})]) 
+                    megagraph.add_edges_from([(i, new_graph, {"operation(s)" : [], 
+                    "edge delta": abs(len(megagraph.nodes[new_graph].get("combo"))-len(megagraph.nodes[i].get("combo")))})]) 
                     megagraph.edges[(i, new_graph)]["operation(s)"].append("cnot"+str((j[0], j[1])))
                     num_cnot_edges+=1
                 else:
@@ -83,7 +86,8 @@ def add_edges(megagraph, n):
             new_graph = new_hash(do_cnot(megagraph.nodes[i].get("combo"), j[1], j[0], n))
             if new_graph != i:
                 if not(megagraph.has_edge(i, new_graph)):
-                    megagraph.add_edges_from([(i, new_graph, {"operation(s)" : []})]) 
+                    megagraph.add_edges_from([(i, new_graph, {"operation(s)" : [], 
+                    "edge delta": abs(len(megagraph.nodes[new_graph].get("combo"))-len(megagraph.nodes[i].get("combo")))})]) 
                     megagraph.edges[(i, new_graph)]["operation(s)"].append("cnot"+str((j[1], j[0])))
                     num_cnot_edges+=1
                 else:

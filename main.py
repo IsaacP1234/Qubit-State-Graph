@@ -26,7 +26,7 @@ print(diction.get("foo"))
 # can create a 6 node megagraph quickly, but adding edges takes a while.(2 mins total)
 # likely cant handle anything higher within reasonable amount of time
 
-num_nodes = 6
+num_nodes = 5
 G = nx.Graph()
 for i in range(1, num_nodes+1):
     G.add_node(i)
@@ -72,7 +72,10 @@ for i in shortest_paths_of_worst_cases[0]:
 #equivalence classes(only for cnot)
 for i in ats.find_equivalence_classes(megagraph):
     print(len(i.keys()))
-    
+
+#find long cnots: 2 for 4, 3 for 5, 4 for 6, 5 for 7
+for i in ats.find_large_edges(megagraph, ["cnot"]):
+    print(i)
 #tests(just lc and cnot for now)
 #test.ut.main()
 

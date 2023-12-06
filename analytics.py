@@ -1,5 +1,6 @@
 import networkx as nx
 import megagraph as mg
+import helpers as hp
 #takes in completed megagraph and node to start at
 #returns list of tuples containing a worst case graph and the number of operations it takes to get there
 def find_worst_cases(megagraph, start):
@@ -7,8 +8,8 @@ def find_worst_cases(megagraph, start):
     worst_length = max(shortest_path_lengths.values())
     worst_cases = []
     for i in shortest_path_lengths:
-        if shortest_path_lengths[i] == worst_length:
-            worst_cases.append((i, shortest_path_lengths[i]))
+        if shortest_path_lengths[i] == worst_length and not(hp.is_isomorphic(worst_cases, megagraph.nodes[i].get("graph"))):
+            worst_cases.append(megagraph.nodes[i].get("graph"))
     return worst_cases
 
 
@@ -25,7 +26,7 @@ def find_shortest_paths_of_worst_cases(megagraph, start):
     megalist = []
     worst_cases = find_worst_cases(megagraph, start)
     for i in worst_cases:
-        megalist.append(find_shortest_path(megagraph, start, i[0]))
+        megalist.append(find_shortest_path(megagraph, start, mg.new_hash(i)))
     return megalist
 
 def shortest_path_to_star(megagraph, start, n):

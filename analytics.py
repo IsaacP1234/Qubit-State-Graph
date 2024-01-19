@@ -43,11 +43,19 @@ def find_equivalence_classes(megagraph):
     for i in class_graph:
         classes.append({})
         for j in i:
-            iso_hash = nx.weisfeiler_lehman_graph_hash(megagraph.nodes[j].get("graph"))
+            is_iso = False
+            for k in classes[index].values():
+                if nx.is_isomorphic(megagraph.nodes[j].get("graph"), k):
+                    is_iso = True
+                    break
+            if not(is_iso):
+                classes[index][megagraph.nodes[j].get("combo")] = megagraph.nodes[j].get("graph")
+            # old way
+            """ iso_hash = nx.weisfeiler_lehman_graph_hash(megagraph.nodes[j].get("graph"))
             try:
                 list(classes[index].values()).index(iso_hash)
             except:
-                classes[index][megagraph.nodes[j].get("combo")] = iso_hash
+                classes[index][megagraph.nodes[j].get("combo")] = iso_hash """
         index+=1
     return classes
 

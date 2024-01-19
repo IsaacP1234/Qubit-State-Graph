@@ -68,7 +68,7 @@ def add_edges(megagraph, n):
                     try:
                         megagraph.edges[(i, new_graph)]["operation(s)"].index("flip"+str((j[0], j[1])))
                     except:
-                        #megagraph.edges[(i, new_graph)]["operation(s)"].append("flip"+str((j[0], j[1])))
+                        megagraph.edges[(i, new_graph)]["operation(s)"].append("flip"+str((j[0], j[1])))
                         num_flip_edges +=1
             new_graph = new_hash(do_cnot(megagraph.nodes[i].get("combo"), j[0], j[1], n))
             if new_graph != i:

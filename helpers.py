@@ -1,9 +1,10 @@
 import networkx as nx
 
-#hash does't work properly
 def is_isomorphic(graphs, graph):
-    iso_hash = nx.weisfeiler_lehman_graph_hash(graph)
     for i in graphs:
-        if nx.weisfeiler_lehman_graph_hash(i) == iso_hash:
+        if nx.is_isomorphic(i, graph):
             return True
     return False
+
+def max_degree():
+    return None

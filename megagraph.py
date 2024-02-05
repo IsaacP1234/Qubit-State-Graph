@@ -1,10 +1,14 @@
 import networkx as nx
 import itertools as its
+import helpers as hp
 
-#hash that distinguishes between isomporphic graphs
+#hash that distinguishes between isomporphic graphs with same nodes
 def new_hash(G):
     return hash(frozenset([frozenset(e) for e in G.edges()]))
 
+#hash that distinhuished between isomorphic graphs with different nodes
+def newer_hash(G):
+    return hash(frozenset([frozenset(e) for e in G.edges()]+[e for e in G.nodes()]))
 #these functions are used to create a "megagraph" of all possible graph states(as hashes) based on a graph with n nodes
 #function that returns list of unordered pairs  
 def node_pairs(n):
@@ -142,4 +146,125 @@ def do_cnot(combo, control, target, n):
             else:
                 graph.add_edge(control, i)
     return graph
+
+#creates a partial graph to use in tree creation
+def create_partial_graph(graph, nodes):
+    partial_graph = nx.Graph()
+    for i in graph.nodes():
+        partial_graph.add_node(i)
+    for i in nodes:
+        partial_graph.remove_node(i)
+    return partial_graph
+
+#create a tree megagraph where shortest paths to end node represent sets of gate(s) that be done simulatenously 
+def create_simultaneous_gate_megatree(graph, megatree):
+    #stop if at leaf
+    #print(megatree.adj)
+    if graph.number_of_nodes() > 1:
+    #iterate through all possible gates
+        #lc
+        for j in graph.nodes():
+            to_remove = list(nx.neighbors(graph, j))
+            to_remove.append(j)
+            partial_graph = create_partial_graph(graph, to_remove)
+            print(partial_graph.adj)
+            megatree.add_nodes_from([(newer_hash(partial_graph), {"graph": partial_graph, "combo": hp.combo(partial_graph)})])
+            if not(megatree.has_edge(newer_hash(graph), newer_hash(partial_graph))):
+                megatree.add_edges_from([(newer_hash(graph), newer_hash(partial_graph), {"operation(s)": []})])
+            megatree.edges[newer_hash(graph), newer_hash(partial_graph)]["operation(s)"].append("lc("+ str(j)+")")
+            create_simultaneous_gate_megatree(partial_graph, megatree)
+        for j in its.combinations(graph.nodes(), 2):
+            #cz
+            to_remove=[j[0], j[1]]
+            partial_graph = create_partial_graph(graph, to_remove)
+            #add partial graph as nodes
+            megatree.add_nodes_from([(newer_hash(graph), {"graph": graph, "combo": hp.combo(graph)}), 
+                (newer_hash(partial_graph), {"graph": partial_graph, "combo": hp.combo(partial_graph)})])
+            #add edge and gate to edge
+            if not(megatree.has_edge(newer_hash(graph), newer_hash(partial_graph))):
+                megatree.add_edges_from([(newer_hash(graph), newer_hash(partial_graph), {"operation(s)": []})])
+            megatree.edges[newer_hash(graph), newer_hash(partial_graph)]["operation(s)"].append("cz"+ str((j[0],j[1])))
+            create_simultaneous_gate_megatree(partial_graph, megatree)
+            #cnot
+            to_remove=list(nx.neighbors(graph, j[1]))
+            to_remove.append(j[0])
+            to_remove.append(j[1])
+            partial_graph = create_partial_graph(graph, to_remove)
+            #add partial graph as nodes
+            megatree.add_nodes_from([(newer_hash(graph), {"graph": graph, "combo": hp.combo(graph)}), 
+                (newer_hash(partial_graph), {"graph": partial_graph, "combo": hp.combo(partial_graph)})])
+            #add edge and gate to edge
+            if not(megatree.has_edge(newer_hash(graph), newer_hash(partial_graph))):
+                megatree.add_edges_from([(newer_hash(graph), newer_hash(partial_graph), {"operation(s)": []})])
+            megatree.edges[newer_hash(graph), newer_hash(partial_graph)]["operation(s)"].append("cnot"+ str((j[0],j[1])))
+            create_simultaneous_gate_megatree(partial_graph, megatree)
+            #opposite cnot
+            to_remove=list(nx.neighbors(graph, j[0]))
+            to_remove.append(j[0])
+            to_remove.append(j[1])
+            partial_graph = create_partial_graph(graph, to_remove)
+            #add partial graph as nodes
+            megatree.add_nodes_from([(newer_hash(graph), {"graph": graph, "combo": hp.combo(graph)}), 
+                (newer_hash(partial_graph), {"graph": partial_graph, "combo": hp.combo(partial_graph)})])
+            #add edge and gate to edge
+            if not(megatree.has_edge(newer_hash(graph), newer_hash(partial_graph))):
+                megatree.add_edges_from([(newer_hash(graph), newer_hash(partial_graph), {"operation(s)": []})])
+            megatree.edges[newer_hash(graph), newer_hash(partial_graph)]["operation(s)"].append("cnot"+ str((j[1],j[0])))
+            create_simultaneous_gate_megatree(partial_graph, megatree)
+
+def find_gate_sets(gate_sets, gates):
+    new_gate_sets = []
+    for gate_set in gate_sets:
+        for gate in gates:
+            new_gate_set = gate_set
+            new_gate_set.append(gate)
+            new_gate_sets.append(new_gate_set)
+    return new_gate_sets
+            
+#converts a shortest path to a list of lists, where each sublist is a set of gates,  
+def convert_path_to_gates(megatree, path, n):
+    gates = []
+    for i in range(len(path)-1):
+        edge_gates = megatree.edges[path[i], path[+1]].get("operation(s)")
+        for gate in edge_gates:
+            # see if gate does anything
+            if gate[2] == "z":
+                if megatree.nodes[path[i]].get("combo") == hp.combo(do_flip(megatree.nodes[path[i]].get("combo"), gate[len(gate)-3], gate[len(gate)-2], n)):
+                    edge_gates.remove(gate)
+            elif gate[2] == "c":
+                if megatree.nodes[path[i]].get("combo") == hp.combo(do_lc(megatree.nodes[path[i]].get("combo"), gate[len(gate)-2]), n):
+                    edge_gates.remove(gate)
+            elif gate[2] == "n":
+                if megatree.nodes[path[i]].get("combo") == hp.combo(do_cnot(megatree.nodes[path[i]].get("combo"), gate[len(gate)-3], gate[len(gate)-2], n)):
+                    edge_gates.remove(gate)
+            gates.append(edge_gates)
+    #convert into list of lists, where each sublist is a set of gates
+    gate_sets = [gates[0]]
+    for i in range(1, len(gates)):
+        gate_sets = find_gate_sets(gate_sets, gates[i])
+    return gate_sets
+
+#adds edges which can include multiple gates preformed simultaneously
+def add_simultaneous_edges(megagraph, n):
+    for node in megagraph.nodes():
+        megatree = nx.Graph()
+        megatree.add_node(newer_hash(node))
+        create_simultaneous_gate_megatree(node, megatree)
+        #find root node
+        for j in megatree.nodes():
+            if len(j.get("graph").number_of_nodes) == n:
+                root = j
+        #find 0 node
+        for j in megatree.nodes():
+            if len(j.get("graph").number_of_nodes) == 0:
+                leaf = j
+        paths = nx.all_shortest_paths(megatree, root, leaf)
+        for path in paths:
+            gates = convert_path_to_gates(path)
+            for 
+
+        
+        
+        
+
 

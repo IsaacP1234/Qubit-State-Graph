@@ -3,19 +3,26 @@ import itertools as its
 import matplotlib.pyplot as plt
 import megagraph as mg
 import analytics as ats
+import helpers as hp
 import test 
 
 
 
 nx.Graph().__hash__ = mg.new_hash(nx.Graph())
 A = nx.Graph()
-A.add_edges_from([(1,2), (2,3)])
+A.add_edges_from([(1,2)])
 B = nx.Graph()
 B.add_edge(2,3)
+#print(hp.combo(B))
 for c in sorted(nx.connected_components(A), key=len, reverse=True):
     print(len(c))
-print(nx.weisfeiler_lehman_graph_hash(A))
-print(nx.weisfeiler_lehman_graph_hash(B))
+C = nx.Graph()
+C.add_node(1)
+D = nx.Graph()
+D.add_node(2)
+print(mg.newer_hash(C))
+print(mg.newer_hash(D))
+print(mg.newer_hash(nx.Graph()))
 
 diction = {"foo": "bar"}
 diction["foo"] +="bar"
@@ -26,30 +33,35 @@ print(diction.get("foo"))
 # can create a 6 node megagraph quickly, but adding edges takes a while.(2 mins total)
 # likely cant handle anything higher within reasonable amount of time
 
-num_nodes = 6
+num_nodes = 4
 G = nx.Graph()
 for i in range(1, num_nodes+1):
     G.add_node(i)
 print(G)
+print(hp.max_degree(G))
 megagraph = mg.create_megagraph(G)
 print(megagraph)
 # has self edges
 mg.add_edges(megagraph, num_nodes)
 print(megagraph) # correct num edges and nodes
 
-
+#test simultaneous
+megatree = nx.Graph()
+megatree.add_node(mg.newer_hash(G.copy()))
+mg.create_simultaneous_gate_megatree(G, megatree)
+print(megatree.adj)
 
 #prints all edge operations
 """ for i in megagraph.edges():
     print(megagraph.edges[i].get("operation(s)")) """
 #special states
-""" if num_nodes == 6:
+if num_nodes == 6:
     print("\nshortest path to hourglass")
     for i in ats.shortest_path_to_hourglass(megagraph):
         print(i[0])
-        print(i[1].get("combo")) """
+        print(i[1].get("combo"))
 
-""" if num_nodes == 7:
+if num_nodes == 7:
     print("\nshortest path to hourglass")
     for i in ats.shortest_path_to_open_envelope(megagraph):
         print(i[0])
@@ -58,11 +70,11 @@ print(megagraph) # correct num edges and nodes
 print("\nshortest path to star")
 for i in ats.shortest_path_to_star(megagraph, mg.new_hash(nx.Graph()), num_nodes):
     print(i[0])
-    print(i[1].get("combo")) """
+    print(i[1].get("combo"))
 
 
 #4 is longest for 4 nodes, 6 is longest for 5
-""" print("\nshortest path to a worst case")
+print("\nshortest path to a worst case")
 shortest_paths_of_worst_cases = ats.find_shortest_paths_of_worst_cases(megagraph, mg.new_hash(G))
 print("# of worst cases: " + str(len(shortest_paths_of_worst_cases)))
 for i in shortest_paths_of_worst_cases[0]:
@@ -70,16 +82,16 @@ for i in shortest_paths_of_worst_cases[0]:
     print(i[1].get("combo"))
 for i in shortest_paths_of_worst_cases:
     print(len(i[len(i)-1][1].get("combo")))
-    print(i[len(i)-1][1].get("combo")) """
+    print(i[len(i)-1][1].get("combo"))
     
 
 
 #equivalence classes(only for cnot)
-for i in ats.find_equivalence_classes(megagraph):
+""" for i in ats.find_equivalence_classes(megagraph):
     print("class"+ "size: " + str(len(i.keys())))
     for j in i.keys():
         if len(j) < 4:
-            print(j)
+            print(j) """
 
 #find long cnots: 2 for 4, 3 for 5, 4 for 6, 5 for 7
 """ for i in ats.find_large_edges(megagraph, ["cnot"]):
@@ -88,6 +100,6 @@ for i in ats.find_equivalence_classes(megagraph):
 #test.ut.main()
 
 #attemping to draw the graph
-""" pos = nx.spring_layout(megagraph, seed = 1)
+pos = nx.spring_layout(megagraph, seed = 1)
 nx.draw(megagraph, pos=pos, with_labels=True)
-plt.show() """
+plt.show()

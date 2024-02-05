@@ -6,5 +6,12 @@ def is_isomorphic(graphs, graph):
             return True
     return False
 
-def max_degree():
-    return None
+def max_degree(graph):
+
+    return max(graph.degree)[1]
+
+def combo(graph):
+    combo = []
+    for i in graph.edges():
+        combo.append((i[0], i[1]))
+    return combo

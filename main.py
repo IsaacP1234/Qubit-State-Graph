@@ -5,6 +5,7 @@ import megagraph as mg
 import analytics as ats
 import helpers as hp
 import test 
+import copy
 
 
 
@@ -33,10 +34,10 @@ print(diction.get("foo"))
 # can create a 6 node megagraph quickly, but adding edges takes a while.(2 mins total)
 # likely cant handle anything higher within reasonable amount of time
 
-num_nodes = 4
+num_nodes = 3
 G = nx.Graph()
 for i in range(1, num_nodes+1):
-    G.add_node(i)
+    G.add_nodes_from([(i, {"neighbors": [[]]})])
 print(G)
 print(hp.max_degree(G))
 megagraph = mg.create_megagraph(G)
@@ -45,11 +46,24 @@ print(megagraph)
 mg.add_edges(megagraph, num_nodes)
 print(megagraph) # correct num edges and nodes
 
-#test simultaneous
+#test 
+G = nx.Graph()
+for i in range(1, num_nodes+1):
+    G.add_nodes_from([(i, {"neighbors": [[]]})])
+print(G)
+print(list(G.neighbors(1)))
 megatree = nx.Graph()
-megatree.add_node(mg.newer_hash(G.copy()))
+megatree.add_node(mg.newer_hash(copy.deepcopy(G)))
+print(G.adj)
 mg.create_simultaneous_gate_megatree(G, megatree)
 print(megatree.adj)
+pos = nx.spring_layout(megatree, seed = 1)
+nx.draw(megatree, pos=pos, with_labels=True)
+plt.show()
+
+sim_megagraph = mg.create_megagraph(G)
+mg.add_simultaneous_edges(sim_megagraph, num_nodes)
+
 
 #prints all edge operations
 """ for i in megagraph.edges():
@@ -100,6 +114,6 @@ for i in shortest_paths_of_worst_cases:
 #test.ut.main()
 
 #attemping to draw the graph
-pos = nx.spring_layout(megagraph, seed = 1)
-nx.draw(megagraph, pos=pos, with_labels=True)
+pos = nx.spring_layout(sim_megagraph, seed = 1)
+nx.draw(sim_megagraph, pos=pos, with_labels=True)
 plt.show()

@@ -47,7 +47,7 @@ mg.add_edges(megagraph, num_nodes)
 print(megagraph) # correct num edges and nodes
 
 #test 
-G = nx.Graph()
+""" G = nx.Graph()
 for i in range(1, num_nodes+1):
     G.add_nodes_from([(i, {"neighbors": [[]]})])
 print(G)
@@ -62,7 +62,7 @@ nx.draw(megatree, pos=pos, with_labels=True)
 plt.show()
 
 sim_megagraph = mg.create_megagraph(G)
-mg.add_simultaneous_edges(sim_megagraph, num_nodes)
+mg.add_simultaneous_edges(sim_megagraph, num_nodes) """
 
 
 #prints all edge operations
@@ -111,7 +111,7 @@ for i in shortest_paths_of_worst_cases:
 """ for i in ats.find_large_edges(megagraph, ["cnot"]):
     print(i) """
 #tests(just lc and cnot for now)
-#test.ut.main()
+test.ut.main()
 
 #attemping to draw the graph
 pos = nx.spring_layout(sim_megagraph, seed = 1)

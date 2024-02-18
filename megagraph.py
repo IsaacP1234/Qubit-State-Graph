@@ -7,9 +7,6 @@ import copy
 def new_hash(G):
     return hash(frozenset([frozenset(e) for e in G.edges()]))
 
-#hash that distinhuished between isomorphic graphs with different nodes
-def newer_hash(G):
-    return hash(frozenset([frozenset(e) for e in G.edges()]+[e for e in G.nodes()]))
 #these functions are used to create a "megagraph" of all possible graph states(as hashes) based on a graph with n nodes
 #function that returns list of unordered pairs  
 def node_pairs(n):
@@ -39,7 +36,7 @@ def create_megagraph(graph):
             graph.add_edge(combinations[i][j][0], combinations[i][j][1])
         for j in graph.nodes():
             """ if len(list(graph.neighbors(j))) > 0: """
-            print(list(graph.neighbors(j)))
+            #print(list(graph.neighbors(j)))
             #graph.nodes[j].get("neighbors").remove([])
             graph.nodes[j].get("neighbors").append(list(graph.neighbors(j)))
             """ else:
@@ -54,8 +51,9 @@ def add_edges(megagraph, n):
     num_lc_edges= 0
     num_cnot_edges = 0
     num_flip_edges = 0
+    num_cw_edges = 0
     for i in megagraph.nodes():
-        for j in range(1, n+1):
+        """ for j in range(1, n+1):
             new_graph = new_hash(do_lc(megagraph.nodes[i].get("combo"), j, n))
             if new_graph != i:
                 if not(megagraph.has_edge(i, new_graph)):
@@ -68,9 +66,9 @@ def add_edges(megagraph, n):
                         megagraph.edges[(i, new_graph)]["operation(s)"].index("lc("+str(j)+")")
                     except:
                         megagraph.edges[(i, new_graph)]["operation(s)"].append("lc("+str(j)+")")
-                        num_lc_edges+=1
+                        num_lc_edges+=1 """
         for j in its.combinations(range(1,n+1), 2):
-            new_graph = new_hash(do_flip(megagraph.nodes[i].get("combo"), j[0], j[1], n))
+            """ new_graph = new_hash(do_flip(megagraph.nodes[i].get("combo"), j[0], j[1], n))
             if new_graph != i:
                 if not(megagraph.has_edge(i, new_graph)):
                     megagraph.add_edges_from([(i, new_graph, {"operation(s)" : [], 
@@ -108,11 +106,26 @@ def add_edges(megagraph, n):
                         megagraph.edges[(i, new_graph)]["operation(s)"].index("cnot"+str((j[1], j[0])))
                     except:
                         megagraph.edges[(i, new_graph)]["operation(s)"].append("cnot"+str((j[1], j[0])))
-                        num_cnot_edges+=1
+                        num_cnot_edges+=1 """
+            #cw
+            new_graph = new_hash(do_cw(megagraph.nodes[i].get("combo"), j[0], j[1], n))
+            if new_graph != i and megagraph.nodes[i].get("graph").has_edge(j[0], j[1]):
+                if not(megagraph.has_edge(i, new_graph)):
+                    megagraph.add_edges_from([(i, new_graph, {"operation(s)" : [], 
+                    "edge delta": abs(len(megagraph.nodes[new_graph].get("combo"))-len(megagraph.nodes[i].get("combo")))})]) 
+                    megagraph.edges[(i, new_graph)]["operation(s)"].append("cw"+str((j[0], j[1])))
+                    num_cw_edges +=1
+                else:
+                    try:
+                        megagraph.edges[(i, new_graph)]["operation(s)"].index("cw"+str((j[0], j[1])))
+                    except:
+                        megagraph.edges[(i, new_graph)]["operation(s)"].append("cw"+str((j[0], j[1])))
+                        num_cw_edges +=1
                    
     print("edges created by flipping: " + str(num_flip_edges))
     print("egdes created by lc: " + str(num_lc_edges))
     print("edges created by cnot: " + str(num_cnot_edges))
+    print("edges created by cw: " + str(num_cw_edges))
 
 
 #returns a graph with an lc done on the given node in the graph represented by the given combo
@@ -158,11 +171,14 @@ def do_cnot(combo, control, target, n):
 
 def do_cw(combo, node1, node2, n):
     graph = hp.graph_from_combo(combo, n)
+    to_cz = []
     for i in graph.neighbors(node1):
         for j in graph.neighbors(node2):
-            #check if i in is in one neighborhood but not the other
-            if not(i in graph.neighbors(node1) and (j in graph.neighbors(node2))):
-                graph.add_edge(i, j)
+            #check if i,j are each in both neighborhoods
+            if not(i in graph.neighbors(node2) and j in graph.neighbors(node1)) and (i, j) not in to_cz:
+                to_cz.append((i, j))
+    for i in to_cz:
+        graph.add_edge(i[0], i[1])
     return graph
 
 

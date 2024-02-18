@@ -3,6 +3,10 @@ import itertools as its
 import helpers as hp
 import copy
 
+#hash that distinhuished between isomorphic graphs with different nodes
+def newer_hash(G):
+    return hash(frozenset([frozenset(e) for e in G.edges()]+[e for e in G.nodes()]))
+
 #creates a partial graph to use in tree creation
 def create_partial_graph(graph, nodes):
     partial_graph = graph.copy()

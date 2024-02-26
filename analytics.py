@@ -1,6 +1,7 @@
 import networkx as nx
 import megagraph as mg
 import helpers as hp
+
 #takes in completed megagraph and node to start at
 #returns list of tuples containing a worst case graph and the number of operations it takes to get there
 def find_worst_cases(megagraph, start):
@@ -35,7 +36,7 @@ def shortest_path_to_star(megagraph, start, n):
         star_graph.add_edge(1,i)
     return find_shortest_path(megagraph, start, mg.new_hash(star_graph))
 
-#typically for only cnot graphs
+#typically for only singe gate megagraphs
 def find_equivalence_classes(megagraph):
     class_graph = nx.connected_components(megagraph)
     classes = []
@@ -43,6 +44,7 @@ def find_equivalence_classes(megagraph):
     for i in class_graph:
         classes.append({})
         for j in i:
+            #check for iso
             is_iso = False
             for k in classes[index].values():
                 if nx.is_isomorphic(megagraph.nodes[j].get("graph"), k):

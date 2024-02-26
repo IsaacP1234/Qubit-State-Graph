@@ -1,11 +1,42 @@
 import networkx as nx
 import itertools as its
 import helpers as hp
+import megagraph as mg
 import copy
 
 #hash that distinhuished between isomorphic graphs with different nodes
 def newer_hash(G):
     return hash(frozenset([frozenset(e) for e in G.edges()]+[e for e in G.nodes()]))
+
+#create a list of lists unique pairs nodes in a graph to do gates on
+def unique_pairs(sets_of_pairs, pairs, graph):
+    if graph.number_of_nodes > 1:
+        for i in its.combinations(graph.nodes):
+            pairs.append(i)
+            partial_graph = create_partial_graph(graph, i)
+            unique_pairs(sets_of_pairs, pairs, partial_graph)
+    else:
+        sets_of_pairs.append(pairs)
+        for i in pairs:
+            pairs.remove(0)
+def convert_pairs_to_gates(pairs, graph):
+    possible_gates = []
+    for i in pairs:
+        gates = []
+        #check cnot
+        if len(graph.nodes[pairs[i][0]].get("neighborhood")) > 0:
+            gates.append(("cnot", pairs[i]))
+        #check opposite cnot
+        if len(graph.nodes[pairs[i][0]].get("neighborhood")) > 0:
+            gates.append(("cnot", pairs[i]))
+
+#add sim edges for two-node ops
+def add_two_node_sim_edges(megagraph):
+    for i in megagraph.nodes():
+        sets_of_pairs = []
+        unique_pairs(sets_of_pairs, [], megagraph.nodes[i])
+        #lots of gate sets---preprocessing? remove dead gates?
+
 
 #creates a partial graph to use in tree creation
 def create_partial_graph(graph, nodes):
@@ -19,7 +50,7 @@ def create_partial_graph(graph, nodes):
     return partial_graph
 
 #create a tree megagraph where shortest paths to end node represent sets of gate(s) that be done simulatenously 
-def create_simultaneous_gate_megatree(graph, megatree):
+""" def create_simultaneous_gate_megatree(graph, megatree):
     #stop if at leaf
     #print(megatree.adj)
     #print(graph.adj)
@@ -182,4 +213,4 @@ def add_simultaneous_edges(megagraph, n):
                         new_graph = do_cnot(hp.combo(new_graph), int(gate[len(gate)-5]), int(gate[len(gate)-2]), n)
                 #print(new_graph.adj)
                 megagraph.add_edges_from([(node, new_hash(new_graph), {"gate_sets": []})])
-                megagraph.edges[node, new_hash(new_graph)].get("gate_sets").append(gate_set)
+                megagraph.edges[node, new_hash(new_graph)].get("gate_sets").append(gate_set) """

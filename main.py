@@ -6,6 +6,7 @@ import analytics as ats
 import helpers as hp
 import test 
 import copy
+#import simultaneous_megagraph as sm error here for some reason
 
 
 
@@ -37,7 +38,7 @@ print(diction.get("foo"))
 num_nodes = 4
 G = nx.Graph()
 for i in range(1, num_nodes+1):
-    G.add_nodes_from([(i, {"neighbors": [[]]})])
+    G.add_nodes_from([(i, {"neighbors": []})])
 print(G)
 print(hp.max_degree(G))
 megagraph = mg.create_megagraph(G)
@@ -47,7 +48,29 @@ mg.add_edges(megagraph, num_nodes)
 print(megagraph) # correct num edges and nodes
 
 #test simul
-""" G = nx.Graph()
+
+K = nx.Graph()
+for i in range(1, num_nodes+1):
+    K.add_nodes_from([(i, {"neighbors": []})])
+print(K.adj)
+""" sets_of_pairs = []
+mg.unique_pairs(sets_of_pairs, [], K, K.number_of_nodes())
+possible_gate_sets = []
+for i in sets_of_pairs:
+        possible_gates = mg.convert_pairs_to_gates(i)
+        possible_gate_sets.append(possible_gates)
+print(possible_gate_sets)
+sets_of_gates = []
+mg.convert_gates_to_sets(sets_of_gates, [], possible_gates)
+print(sets_of_gates)
+print(len(sets_of_gates))
+megagraph = mg.create_megagraph(K) """
+mg.add_two_node_sim_edges(megagraph, K)
+print(megagraph)  
+"""
+
+#test full simul
+G = nx.Graph()
 for i in range(1, num_nodes+1):
     G.add_nodes_from([(i, {"neighbors": [[]]})])
 print(G)
@@ -81,7 +104,7 @@ if num_nodes == 7:
         print(i[0])
         print(i[1].get("combo"))
 
-""" print("\nshortest path to star")
+print("\nshortest path to star")
 for i in ats.shortest_path_to_star(megagraph, mg.new_hash(nx.Graph()), num_nodes):
     print(i[0])
     print(i[1].get("combo"))
@@ -94,9 +117,10 @@ print("# of worst cases: " + str(len(shortest_paths_of_worst_cases)))
 for i in shortest_paths_of_worst_cases[0]:
     print(i[0])
     print(i[1].get("combo"))
+print("all worst cases")
 for i in shortest_paths_of_worst_cases:
     print(len(i[len(i)-1][1].get("combo")))
-    print(i[len(i)-1][1].get("combo")) """
+    print(i[len(i)-1][1].get("combo"))
     
 
 
@@ -114,6 +138,6 @@ for i in ats.find_equivalence_classes(megagraph):
 #test.ut.main()
 
 #attemping to draw the graph
-pos = nx.spring_layout(megagraph, seed = 1)
+""" pos = nx.spring_layout(megagraph, seed = 1)
 nx.draw(megagraph, pos=pos, with_labels=True)
-plt.show()
+plt.show() """

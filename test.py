@@ -17,7 +17,10 @@ class test_megagraph(ut.TestCase):
         graph = nx.Graph()
         graph.add_edges_from([(1,4), (2,4), (3,4), (1,2), (1,3)])
         self.assertEqual(mg.new_hash(mg.do_cnot([(1,4), (2,4), (3,4)], 1, 4, 4)), mg.new_hash(graph))
-
+    def test_do_cw(self):
+        graph = nx.Graph()
+        graph.add_edges_from([(1,4), (2,4) , (1,3), (2,3), (2,5), (1,6), (6,5), (6,4), (6,3), (5,4), (5,3)])
+        self.assertEqual(mg.new_hash(mg.do_cw([(1,4), (2,4) , (1,3), (2,3), (2,5), (1,6)], 1, 2, 6)), mg.new_hash(graph))
 if __name__ == "__main__":
     ut.main()
         

@@ -23,3 +23,12 @@ def graph_from_combo(combo, n):
     for i in combo:
         graph.add_edge(i[0], i[1])
     return graph
+
+# copies graph formatted for megagraph inculding attributes, hopefully faster than deepcopy
+def fullcopy(graph):
+    copy = nx.Graph()
+    for i in graph.nodes():
+        copy.add_nodes_from([(i, {"neighbors": graph.nodes[i].get("neighbors")})])
+    for i in graph.edges():
+        copy.add_edge(i[0], i[1])
+    return copy

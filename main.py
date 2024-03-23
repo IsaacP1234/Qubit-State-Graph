@@ -44,6 +44,8 @@ print(G)
 print(hp.max_degree(G))
 megagraph = mg.create_megagraph(G)
 print(megagraph)
+""" for node in megagraph.nodes:
+    print(megagraph.nodes[node].get("graph").adj) """
 # has self edges
 #mg.add_edges(megagraph, num_nodes)
 print(megagraph) # correct num edges and nodes
@@ -54,6 +56,11 @@ sop =[]
 mg.new_unique_pairs(sop, [], listb, 5)
 print(sop)
 print(len(sop)) """
+""" F = nx.Graph()
+for i in range(1, num_nodes+1):
+    F.add_nodes_from([(i, {"neighbors": []})])
+F = mg.do_sim_cnot(F, 3, 4)
+print(F.adj) """
 K = nx.Graph()
 for i in range(1, num_nodes+1):
     K.add_nodes_from([(i, {"neighbors": []})])
@@ -71,6 +78,15 @@ print(sets_of_gates)
 print(len(sets_of_gates))
 megagraph = mg.create_megagraph(K) """
 mg.add_two_node_sim_edges(megagraph, K)
+""" print(megagraph) 
+edges1 = []
+for i in megagraph.edges():
+    edges1.append(i) """
+
+""" for i in megagraph.edges():
+    if not(i in edges1):
+        print(megagraph.edges[i].get("operation(s)")) """
+
 print(megagraph)  
 """
 
@@ -117,7 +133,7 @@ for i in ats.shortest_path_to_star(megagraph, mg.new_hash(nx.Graph()), num_nodes
 
 #4 is longest for 4 nodes, 6 is longest for 5
 print("\nshortest path to a worst case")
-shortest_paths_of_worst_cases = ats.find_shortest_paths_of_worst_cases(megagraph, mg.new_hash(G))
+shortest_paths_of_worst_cases = ats.find_shortest_paths_of_worst_cases(megagraph, mg.new_hash(nx.Graph()))
 print("# of worst cases: " + str(len(shortest_paths_of_worst_cases)))
 for i in shortest_paths_of_worst_cases[0]:
     print(i[0])
@@ -143,6 +159,6 @@ for i in ats.find_equivalence_classes(megagraph):
 #test.ut.main()
 
 #attemping to draw the graph
-pos = nx.spring_layout(megagraph, seed = 1)
+""" pos = nx.spring_layout(megagraph, seed = 1)
 nx.draw(megagraph, pos=pos, with_labels=True)
-plt.show()
+plt.show() """

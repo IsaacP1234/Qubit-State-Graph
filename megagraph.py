@@ -29,9 +29,9 @@ def pair_partitions(pairs):
 #for each permutation, create a node in a megagraph of that permuation of node-pairs having edges between them
 def create_megagraph(graph):
     megagraph = nx.Graph()
-    megagraph.add_nodes_from([(new_hash(graph), {"graph" : graph, "combo" : (())})])
+    megagraph.add_nodes_from([(new_hash(graph), {"graph" : hp.fullcopy(graph), "combo" : (())})])
     combinations = pair_partitions(node_pairs(len(graph.nodes())))
-    blank = copy.deepcopy(graph)
+    blank = hp.fullcopy(graph)
     for i in range(len(combinations)):
         for j in range(1, graph.number_of_nodes()+1):
             graph.add_nodes_from([(j, {"neighbors": []})])
@@ -45,9 +45,9 @@ def create_megagraph(graph):
                 graph.nodes[j].get("neighbors").append(k)
             """ else:
                 graph.nodes[j].get("neighbors").append([]) """
-        state = copy.deepcopy(graph)
-        megagraph.add_nodes_from([(new_hash(state), {"graph" : state, "combo": combinations[i]})])
-        graph = copy.deepcopy(blank)  
+        state = hp.fullcopy(graph)
+        megagraph.add_nodes_from([(new_hash(state), {"graph" : hp.fullcopy(state), "combo": combinations[i]})])
+        graph = hp.fullcopy(blank)  
     return megagraph
 
 
@@ -218,7 +218,7 @@ def new_unique_pairs(sets_of_pairs, pairs, nodes, n):
         #pairs.clear()
 
 
-#create a list of lists unique pairs nodes in a graph to do gates on works for 4 but not 5 or 6
+#create a list of lists unique pairs nodes in a graph to do gates on works for 4 5 and 6
 def unique_pairs(sets_of_pairs, pairs, graph, n):
     #print(pairs)
     if graph.number_of_nodes() > 1:
@@ -336,6 +336,7 @@ def add_two_node_sim_edges(megagraph, graph):
             #dummy = copy.deepcopy(megagraph.nodes[node].get("graph")) #taking too long
             dummy = hp.fullcopy(megagraph.nodes[node].get("graph"))
             for gate in gate_set:
+                #print(gate)
                 #do gate on dummy
                 if gate[0][1] == "z":
                     dummy = do_sim_cz(dummy, gate[1][0],gate[1][1])
@@ -343,8 +344,8 @@ def add_two_node_sim_edges(megagraph, graph):
                 if gate[0][1] == "n":
                     dummy = do_sim_cnot(dummy, gate[1][0],gate[1][1])
                     #print("n")
-                if gate[0][1] == "n":
-                    dummy = do_sim_cnot(dummy, gate[1][1], gate[1][0])
+                """ if gate[0][1] == "n":
+                    dummy = do_sim_cnot(dummy, gate[1][1], gate[1][0]) """
                     #print("n2")
                 if gate[0][1] == "w" and not dummy.has_edge(gate[1][0], gate[1][1]):
                     dummy = do_sim_cw(dummy, gate[1][0],gate[1][1])

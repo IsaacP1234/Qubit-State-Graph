@@ -17,6 +17,7 @@ def find_worst_cases(megagraph, start):
 #returns list of tuples containing an operation and the graph that operation leads to 
 def find_shortest_path(megagraph, start, target):
     shortest_path = nx.shortest_path(megagraph, start, target)
+    #print(shortest_path)
     formatted_shortest_path = []
     for j in range(len(shortest_path)-1):
         formatted_shortest_path.append((megagraph.edges[shortest_path[j], shortest_path[j+1]].get("operation(s)"), megagraph.nodes[shortest_path[j+1]]))

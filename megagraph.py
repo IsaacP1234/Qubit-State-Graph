@@ -196,6 +196,28 @@ def create_partial_graph(graph, nodes):
         partial_graph.remove_node(i)
     return partial_graph
 
+#trying new mehtod
+def new_unique_pairs(sets_of_pairs, pairs, nodes, n):
+    if len(nodes) > 1:
+        for i in its.combinations(nodes, 2):
+            pairs.append(i)
+            #print(pairs)
+            partial_nodes = nodes.copy()
+            for j in i:
+                partial_nodes.remove(j)
+            #new_pairs = pairs.copy()
+            new_unique_pairs(sets_of_pairs, pairs, partial_nodes, n)
+            pairs.remove(i)
+    else:
+        if not(sorted(pairs) in sets_of_pairs) and len(pairs) == n //2:
+            #to avoid clearing problems
+            """ real_pairs =[]
+            real_pairs.append(pairs[len(pairs)-2])
+            real_pairs.append(pairs[len(pairs)-1]) """
+            sets_of_pairs.append(pairs.copy())
+        #pairs.clear()
+
+
 #create a list of lists unique pairs nodes in a graph to do gates on works for 4 but not 5 or 6
 def unique_pairs(sets_of_pairs, pairs, graph, n):
     #print(pairs)
@@ -207,6 +229,7 @@ def unique_pairs(sets_of_pairs, pairs, graph, n):
             partial_graph = create_partial_graph(graph, i)
             #print(partial_graph)
             unique_pairs(sets_of_pairs, pairs, partial_graph, n)
+            pairs.remove(i)
     else:
         
         #correct for errors in function
@@ -214,15 +237,15 @@ def unique_pairs(sets_of_pairs, pairs, graph, n):
         """ true_pairs = []
         for i in range(n//2):
             true_pairs.append(pairs[len(pairs)-1-i]) """
-        #this checking needs to be fixed--double counting still happening
         if not sorted(pairs) in sets_of_pairs and len(pairs) == n//2:
             #print("a")
             sets_of_pairs.append(sorted(pairs.copy()))
         #print("b")
-        for i in range(len(pairs)):
-            pairs.remove(pairs[0])
+        """ for i in range(len(pairs)):
+            pairs.remove(pairs[0]) """
 
 def convert_pairs_to_gates(pairs):
+    #print(pairs)
     possible_gates = []
     for i in pairs:
         gates = []
@@ -231,6 +254,7 @@ def convert_pairs_to_gates(pairs):
         gates.append(("cw", i))
         gates.append(("cz", i))
         possible_gates.append(gates)
+    print(possible_gates)
     return possible_gates
 
 def convert_gates_to_sets(gate_sets, gate_set, possible_gates):
@@ -238,6 +262,8 @@ def convert_gates_to_sets(gate_sets, gate_set, possible_gates):
         for i in possible_gates[0]:
             gate_set.append(i)
             partial_set = possible_gates[1 :len(possible_gates)]
+            #add partially built partial set, will create duplicates--switch to set?
+            #gate_sets.append(gate_set.copy())
             convert_gates_to_sets(gate_sets, gate_set, partial_set)
     else:
         gate_sets.append(gate_set.copy())
@@ -280,23 +306,35 @@ def add_two_node_sim_edges(megagraph, graph):
     sets_of_pairs = []
     unique_pairs(sets_of_pairs, [], graph, graph.number_of_nodes())
     print(sets_of_pairs)
+    print(len(sets_of_pairs))
     possible_gate_sets = []
     for i in sets_of_pairs:
+        #print(i)
+        for j in range(1, len(i)):
+            #print(j)
+            for k in its.combinations(i, j):
+                #print(k)
+                possible_gates = convert_pairs_to_gates(k)
+                possible_gate_sets.append(possible_gates)
         possible_gates = convert_pairs_to_gates(i)
         possible_gate_sets.append(possible_gates)
     print(possible_gate_sets)
+    print(len(possible_gate_sets))
     sets_of_gates = []
     for gates in possible_gate_sets:
         gate_set = []
         convert_gates_to_sets(gate_set, [], gates)
-        print(len(gate_set))
-        sets_of_gates.append(gate_set)
+        #print(len(gate_set))
+        for i in gate_set:
+            sets_of_gates.append(i)
+    #sets_of_gates = set(sets_of_gates)
     print(sets_of_gates)
     print(len(sets_of_gates))
     for node in megagraph.nodes():
-        for gate_set in sets_of_gates[0]:
+        for gate_set in sets_of_gates:
             #print(gate_set)
-            dummy = copy.deepcopy(megagraph.nodes[node].get("graph"))
+            #dummy = copy.deepcopy(megagraph.nodes[node].get("graph")) #taking too long
+            dummy = hp.fullcopy(megagraph.nodes[node].get("graph"))
             for gate in gate_set:
                 #do gate on dummy
                 if gate[0][1] == "z":

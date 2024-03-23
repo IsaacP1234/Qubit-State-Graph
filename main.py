@@ -18,6 +18,7 @@ B.add_edge(2,3)
 #print(hp.combo(B))
 for c in sorted(nx.connected_components(A), key=len, reverse=True):
     print(len(c))
+
 """ C = nx.Graph()
 C.add_node(1)
 D = nx.Graph()
@@ -44,11 +45,15 @@ print(hp.max_degree(G))
 megagraph = mg.create_megagraph(G)
 print(megagraph)
 # has self edges
-mg.add_edges(megagraph, num_nodes)
+#mg.add_edges(megagraph, num_nodes)
 print(megagraph) # correct num edges and nodes
 
 #test simul
-
+""" listb = [1,2,3,4,5]
+sop =[]
+mg.new_unique_pairs(sop, [], listb, 5)
+print(sop)
+print(len(sop)) """
 K = nx.Graph()
 for i in range(1, num_nodes+1):
     K.add_nodes_from([(i, {"neighbors": []})])
@@ -138,6 +143,6 @@ for i in ats.find_equivalence_classes(megagraph):
 #test.ut.main()
 
 #attemping to draw the graph
-""" pos = nx.spring_layout(megagraph, seed = 1)
+pos = nx.spring_layout(megagraph, seed = 1)
 nx.draw(megagraph, pos=pos, with_labels=True)
-plt.show() """
+plt.show()

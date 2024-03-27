@@ -57,7 +57,7 @@ def add_edges(megagraph, n):
     num_flip_edges = 0
     num_cw_edges = 0
     for i in megagraph.nodes():
-        for j in range(1, n+1):
+        """ for j in range(1, n+1):
             new_graph = new_hash(do_lc(megagraph.nodes[i].get("combo"), j, n))
             if new_graph != i:
                 if not(megagraph.has_edge(i, new_graph)):
@@ -70,9 +70,9 @@ def add_edges(megagraph, n):
                         megagraph.edges[(i, new_graph)]["operation(s)"].index("lc("+str(j)+")")
                     except:
                         megagraph.edges[(i, new_graph)]["operation(s)"].append("lc("+str(j)+")")
-                        num_lc_edges+=1
+                        num_lc_edges+=1 """
         for j in its.combinations(range(1,n+1), 2):
-            new_graph = new_hash(do_flip(megagraph.nodes[i].get("combo"), j[0], j[1], n))
+            """ new_graph = new_hash(do_flip(megagraph.nodes[i].get("combo"), j[0], j[1], n))
             if new_graph != i:
                 if not(megagraph.has_edge(i, new_graph)):
                     megagraph.add_edges_from([(i, new_graph, {"operation(s)" : [], 
@@ -110,7 +110,7 @@ def add_edges(megagraph, n):
                         megagraph.edges[(i, new_graph)]["operation(s)"].index("cnot"+str((j[1], j[0])))
                     except:
                         megagraph.edges[(i, new_graph)]["operation(s)"].append("cnot"+str((j[1], j[0])))
-                        num_cnot_edges+=1
+                        num_cnot_edges+=1 """
             #cw
             new_graph = new_hash(do_cw(megagraph.nodes[i].get("combo"), j[0], j[1], n))
             if new_graph != i and not megagraph.nodes[i].get("graph").has_edge(j[0], j[1]):
@@ -265,10 +265,11 @@ def convert_gates_to_sets(gate_sets, gate_set, possible_gates):
             #add partially built partial set, will create duplicates--switch to set?
             #gate_sets.append(gate_set.copy())
             convert_gates_to_sets(gate_sets, gate_set, partial_set)
+            gate_set.remove(i)
     else:
         gate_sets.append(gate_set.copy())
-        for i in range(len(gate_set)):
-            gate_set.remove(gate_set[0])
+        """ for i in range(len(gate_set)):
+            gate_set.remove(gate_set[0]) """
 
 #cz compatible with sim gates
 def do_sim_cz(graph, node1, node2):
@@ -292,7 +293,7 @@ def do_sim_cw(graph, node1, node2):
     for i in graph.nodes[node1].get("neighbors"):
         for j in graph.nodes[node2].get("neighbors"):
             #check if i,j are each in both neighborhoods
-            if not(i in graph.neighbors(node2) and j in graph.neighbors(node1)) and (i, j) not in to_cz:
+            if not(i in graph.neighbors(node2) and j in graph.neighbors(node1)) and (i, j) not in to_cz and  i != j:
                 to_cz.append((i, j))
     for i in to_cz:
         if graph.has_edge(i[0], i[1]):
@@ -302,7 +303,7 @@ def do_sim_cw(graph, node1, node2):
     return graph
 
 #add sim edges for two-node ops
-def add_two_node_sim_edges(megagraph, graph):
+def add_two_node_sim_edges(megagraph, graph, possible_nodes):
     sets_of_pairs = []
     unique_pairs(sets_of_pairs, [], graph, graph.number_of_nodes())
     print(sets_of_pairs)
@@ -328,6 +329,12 @@ def add_two_node_sim_edges(megagraph, graph):
         for i in gate_set:
             sets_of_gates.append(i)
     #sets_of_gates = set(sets_of_gates)
+    """ sum = 0
+    for i in sets_of_gates:
+        if len(i) > 1:
+            print(i)
+            sum = sum+1
+    print(sum) """
     print(sets_of_gates)
     print(len(sets_of_gates))
     for node in megagraph.nodes():
@@ -336,25 +343,36 @@ def add_two_node_sim_edges(megagraph, graph):
             #dummy = copy.deepcopy(megagraph.nodes[node].get("graph")) #taking too long
             dummy = hp.fullcopy(megagraph.nodes[node].get("graph"))
             for gate in gate_set:
-                #print(gate)
-                #do gate on dummy
-                if gate[0][1] == "z":
-                    dummy = do_sim_cz(dummy, gate[1][0],gate[1][1])
-                    #print("z")
-                if gate[0][1] == "n":
-                    dummy = do_sim_cnot(dummy, gate[1][0],gate[1][1])
-                    #print("n")
-                """ if gate[0][1] == "n":
+                if gate[1][0] in possible_nodes and gate[1][1] in possible_nodes:
+                    #print(gate)
+                    #do gate on dummy
+                    if gate[0][1] == "z":
+                        dummy = do_sim_cz(dummy, gate[1][0],gate[1][1])
+                        #print("z")
+                    if gate[0][1] == "n":
+                        dummy = do_sim_cnot(dummy, gate[1][0],gate[1][1])
+                        #print("n")
+                    """ if gate[0][1] == "n":
                     dummy = do_sim_cnot(dummy, gate[1][1], gate[1][0]) """
-                    #print("n2")
-                if gate[0][1] == "w" and not dummy.has_edge(gate[1][0], gate[1][1]):
-                    dummy = do_sim_cw(dummy, gate[1][0],gate[1][1])
-                    #print("w")
+                        #print("n2")
+                    if gate[0][1] == "w" and not dummy.has_edge(gate[1][0], gate[1][1]):
+                        dummy = do_sim_cw(dummy, gate[1][0],gate[1][1])
+                        #print("w")
+                
             """ print(dummy.adj)
             print(new_hash(dummy))
             print(node) """
-            if node != new_hash(dummy):
-                megagraph.add_edges_from([(node, new_hash(dummy), {"operation(s)": str(gate_set)})])
+            dummy_hash = new_hash(dummy)
+            if node != dummy_hash:
+                if dummy_hash not in megagraph.nodes():
+                    print(megagraph.nodes[node].get("graph").adj)
+                    print(gate_set)
+                    print(dummy.adj)
+                    print(dummy_hash)
+                    print(megagraph)
+                megagraph.add_edges_from([(node, dummy_hash, {"operation(s)": str(gate_set)})])
+
+                    
             """ print(megagraph) """
 
                 

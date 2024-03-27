@@ -6,8 +6,7 @@ import analytics as ats
 import helpers as hp
 import test 
 import copy
-#import simultaneous_megagraph as sm error here for some reason
-
+import simultaneous_megagraph as sm 
 
 
 nx.Graph().__hash__ = mg.new_hash(nx.Graph())
@@ -36,7 +35,7 @@ print(diction.get("foo"))
 # can create a 6 node megagraph quickly, but adding edges takes a while.(2 mins total)
 # likely cant handle anything higher within reasonable amount of time
 
-num_nodes = 4
+num_nodes = 6
 G = nx.Graph()
 for i in range(1, num_nodes+1):
     G.add_nodes_from([(i, {"neighbors": []})])
@@ -77,7 +76,7 @@ mg.convert_gates_to_sets(sets_of_gates, [], possible_gates)
 print(sets_of_gates)
 print(len(sets_of_gates))
 megagraph = mg.create_megagraph(K) """
-mg.add_two_node_sim_edges(megagraph, K)
+mg.add_two_node_sim_edges(megagraph, K, [1,2, 3, 4, 5, 6])
 """ print(megagraph) 
 edges1 = []
 for i in megagraph.edges():
